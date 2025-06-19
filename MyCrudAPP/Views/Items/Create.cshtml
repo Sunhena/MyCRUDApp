@@ -1,0 +1,82 @@
+﻿@model MyCrudAPP.Models.Items
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Item Creation</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form id="createForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                <select asp-for="Gender" class="form-control">
+                    <option value="">-- Select Gender --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" type="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('#createForm').on('submit', function (e) {
+                e.preventDefault();
+              
+                if (!$(this).valid()) return;
+
+                const item = {
+                    Name: $('#Name').val(),
+                    Gender: $('#Gender').val(),
+                    Email: $('#Email').val()
+                };
+
+                $.ajax({
+                    url: '/Items/Create',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(item),
+                    success: function (response) {
+                        if (response.success) {
+                            alert("Item added successfully!");
+                            window.location.href = '/Items';
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Server error: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
